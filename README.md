@@ -1,6 +1,6 @@
 # RADIUS OS
 
-Following (this great tutorial)[https://os.phil-opp.com/freestanding-rust-binary] in an effort to learn a bit more about OS and how to build one from scratch
+Following [this great tutorial](https://os.phil-opp.com/freestanding-rust-binary) in an effort to learn a bit more about OS and how to build one from scratch
 
 
 ## Pre-reqs:
