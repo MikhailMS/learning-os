@@ -11,9 +11,11 @@ bootloader  = "0.9.23"
 lazy_static = { version = "1.0",  features = ["spin_no_std"] }
 spin        = "0.5.2"
 volatile    = "0.2.6"
+x86_64      = "0.14.2" # For simpler work with I/O mapped ports
 
-[profile.dev]
-panic = "abort" # disable stack unwinding on panic
 
-[profile.release]
-panic = "abort" # disable stack unwinding on panic
+# This is required to ensure we can exit once tests are completed
+# Ignore for non-test builds
+[package.metadata.bootimage]
+test-args              = ["-device", "isa-debug-exit,iobase=0xf4,iosize=0x04"]
+test-success-exit-code = 33 # (0x10 << 1) | 1
