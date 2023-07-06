@@ -43,17 +43,17 @@ impl ColourCode {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)] // To ensure field ordering (Rust ordering in default structs is undefined)
-struct ScreenChar {
-    ascii_char:  u8,
+pub struct ScreenChar {
+    pub ascii_char:  u8,
     colour_code: ColourCode
 }
 
-const BUFFER_HEIGHT: usize = 25;
-const BUFFER_WIDTH:  usize = 80;
+pub const BUFFER_HEIGHT: usize = 25;
+pub const BUFFER_WIDTH:  usize = 80;
 
 #[repr(transparent)] // To ensure memory layout is exactly same as for its single field
 pub struct Buffer {
-    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT], // chars represents the VGA output memory area
+    pub chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT], // chars represents the VGA output memory area
 }
 
 pub struct Writer {
