@@ -5,10 +5,9 @@
 #![reexport_test_harness_main = "test_main"]
 
 pub mod macros;
+pub mod qemu_codes;
 pub mod serial_uart;
 pub mod vga;
-
-mod qemu_codes;
 
 use core::panic::PanicInfo;
 

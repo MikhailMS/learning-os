@@ -20,3 +20,7 @@ x86_64      = "0.14.2" # For simpler work with I/O mapped ports
 test-args              = ["-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio", "-display", "none"]
 test-success-exit-code = 33 # (0x10 << 1) | 1
 test-timeout           = 15 # seconds
+
+[[test]]
+name    = "should_panic"
+harness = false
