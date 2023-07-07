@@ -6,12 +6,12 @@
 #![test_runner(radius_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-mod macros;
-mod serial_uart;
-mod vga;
-
 use core::panic::PanicInfo;
+use radius_os::{ println, vga };
+
+#[cfg(test)]
 use radius_os::test_panic_handler;
+
 
 /// This panic only for dev & release builds
 #[cfg(not(test))]
