@@ -3,15 +3,15 @@
 
 // Below flags are to enable tests
 #![feature(custom_test_frameworks)]
-#![test_runner(crate::test_runner)]
+#![test_runner(radius_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
 mod macros;
-mod qemu_codes;
 mod serial_uart;
 mod vga;
 
 use core::panic::PanicInfo;
+use radius_os::test_panic_handler;
 
 /// This panic only for dev & release builds
 #[cfg(not(test))]
@@ -25,25 +25,7 @@ fn panic(info: &PanicInfo) -> ! {
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    serial_println!("Panic at the disco *dance*: {}", info);
-    qemu_codes::exit_qemu(qemu_codes::QemuExitCode::Failure);
-    loop {}
-}
-
-
-pub trait Testable {
-    fn run(&self) -> ();
-}
-
-impl <T> Testable for T
-where
-    T: Fn(),
-{
-    fn run(&self) {
-        serial_print!("{}...\t", core::any::type_name::<T>());
-        self();
-        serial_println!("[ok]");
-    }
+    test_panic_handler(info)
 }
 
 
@@ -62,17 +44,6 @@ pub extern "C" fn _start() -> ! {
     loop {}
 }
 
-
-#[cfg(test)]
-fn test_runner(tests: &[&dyn Testable]) {
-    serial_println!("Running {} tests", tests.len());
-
-    for test in tests {
-        test.run();
-    }
-
-    qemu_codes::exit_qemu(qemu_codes::QemuExitCode::Success);
-}
 
 #[test_case]
 fn test_println_simple() {
