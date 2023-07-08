@@ -17,12 +17,11 @@ fn panic(info: &PanicInfo) -> ! {
     test_panic_handler(info)
 }
 
-
 pub trait Testable {
     fn run(&self) -> ();
 }
 
-impl <T> Testable for T
+impl<T> Testable for T
 where
     T: Fn(),
 {
@@ -54,5 +53,5 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     test_main();
-    loop{}
+    loop {}
 }

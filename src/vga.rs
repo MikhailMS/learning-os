@@ -44,8 +44,8 @@ impl ColourCode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)] // To ensure field ordering (Rust ordering in default structs is undefined)
 pub struct ScreenChar {
-    pub ascii_char:  u8,
-    colour_code: ColourCode
+    pub ascii_char: u8,
+    colour_code:    ColourCode
 }
 
 pub const BUFFER_HEIGHT: usize = 25;
@@ -135,7 +135,6 @@ impl Writer {
             self.buffer.chars[row][col].write(blank);
         }
     }
-
 }
 
 impl fmt::Write for Writer {
@@ -149,7 +148,10 @@ impl fmt::Write for Writer {
 pub fn _print(args: fmt::Arguments) {
     // Only to be used by macros!
     use core::fmt::Write;
-    WRITER.lock().write_fmt(args).unwrap(); // Assumably alright to unwrap, because we always return Ok(()) from write_str()
+    WRITER
+        .lock()
+        .write_fmt(args)
+        .unwrap(); // Assumably alright to unwrap, because we always return Ok(()) from write_str()
 }
 
 

@@ -19,5 +19,8 @@ pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     // SerialPort already implements fmt::Write, so we don't need to do it here like wee did for
     // custom VGA buffer
-    SERIAL1.lock().write_fmt(args).expect("Printing to serial failed");
+    SERIAL1
+        .lock()
+        .write_fmt(args)
+        .expect("Printing to serial failed");
 }
