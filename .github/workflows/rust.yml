@@ -20,27 +20,27 @@ jobs:
       matrix:
         os:   [ubuntu-20.04]
     steps:
-
-    - name: Nightly Rust -- Checkout
-      uses: actions/checkout@v3
-
-    - name: Nightly Rust -- Install rust
-      uses: dtolnay/rust-toolchain@nightly
-        
-    - name: Nightly Rust -- Install bootimage
-      run: cargo install bootimage --debug
- 
-    - name: Run `cargo bootimage`
-      run: cargo bootimage
- 
-    - name: Nightly Rust -- Install Rustup Components
-      run: rustup component add rust-src llvm-tools-preview
-
-    - name: Install QEMU (Linux)
-      run: sudo apt update && sudo apt install qemu-system-x86
-
-    - name: Print QEMU Version
-      run: qemu-system-x86_64 --version
-
-    - name: Nightly Rust -- Run tests
-      run: cargo test --verbose
+    
+      - name: Install Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+      - name: Install bootimage
+        run: cargo install bootimage --debug
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Install Rustup Components
+        run: rustup component add rust-src llvm-tools-preview
+      - name: Run `cargo bootimage`
+        uses: actions-rs/cargo@v1
+        with:
+          command: bootimage
+      - name: Install QEMU (Linux)
+        run: sudo apt update && sudo apt install qemu-system-x86
+      - name: Print QEMU Version
+        run: qemu-system-x86_64 --version
+      - name: Run `cargo test`
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
