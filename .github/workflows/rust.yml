@@ -1,0 +1,46 @@
+name: Learning OS
+
+on:
+  push:
+    branches: [ main, development, feature/* ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+  CLICOLOR_FORCE: 1
+  CI: true
+  
+jobs:
+  radius_os_test:
+    name:     Nightly Rust CI testing
+    runs-on:  ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:   [ubuntu-20.04]
+    steps:
+
+    - name: Nightly Rust -- Checkout
+      uses: actions/checkout@v3
+
+    - name: Nightly Rust -- Install rust
+      uses: dtolnay/rust-toolchain@nightly
+        
+    - name: Nightly Rust -- Install bootimage
+      run: cargo install bootimage --debug
+ 
+    - name: Run `cargo bootimage`
+      run: cargo bootimage
+ 
+    - name: Nightly Rust -- Install Rustup Components
+      run: rustup component add rust-src llvm-tools-preview
+
+    - name: Install QEMU (Linux)
+      run: sudo apt update && sudo apt install qemu-system-x86
+
+    - name: Print QEMU Version
+      run: qemu-system-x86_64 --version
+
+    - name: Nightly Rust -- Run tests
+      run: cargo test --verbose
