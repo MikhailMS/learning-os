@@ -31,11 +31,15 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle] // don't mangle (change) the name of this function
 pub extern "C" fn _start() -> ! {
 
+    radius_os::init(); // Initialise Interrupt Descriptor Table for our kernel
+
     vga::WRITER.lock().write_string("Hello there!");
     vga::WRITER.lock().write_byte(b'H');
     vga::WRITER.lock().write_byte_at(b'L', 10, 40);
     
     println!("It works!");
+
+    x86_64::instructions::interrupts::int3(); // Invoke breakpoint exception
 
     #[cfg(test)]
     test_main();
