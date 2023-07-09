@@ -4,6 +4,10 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+// Needed to enable x86-interrupt calling convention
+#![feature(abi_x86_interrupt)]
+
+pub mod interrupts;
 pub mod macros;
 pub mod qemu_codes;
 pub mod serial_uart;
@@ -48,10 +52,15 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     loop {}
 }
 
+pub fn init() {
+    interrupts::init_dft();
+}
+
 // Entry point for `cargo test`
 #[cfg(test)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    init();
     test_main();
     loop {}
 }
