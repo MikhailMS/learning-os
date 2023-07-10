@@ -39,7 +39,7 @@ pub extern "C" fn _start() -> ! {
     
     println!("It works!");
 
-    x86_64::instructions::interrupts::int3(); // Invoke breakpoint exception
+    // x86_64::instructions::interrupts::int3(); // Invoke breakpoint exception
 
     #[cfg(test)]
     test_main();
