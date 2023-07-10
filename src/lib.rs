@@ -8,6 +8,7 @@
 #![feature(abi_x86_interrupt)]
 
 pub mod interrupts;
+pub mod gdt;
 pub mod macros;
 pub mod qemu_codes;
 pub mod serial_uart;
@@ -53,7 +54,10 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 }
 
 pub fn init() {
-    interrupts::init_dft();
+    // Initialise Global Descriptor Table
+    gdt::init();
+    // Initialise Interrupt Descriptor Table
+    interrupts::init_idt();
 }
 
 // Entry point for `cargo test`
