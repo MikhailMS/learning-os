@@ -17,10 +17,16 @@ lazy_static! {
 pub fn _print(args: fmt::Arguments) {
     // Only to be used by macros!
     use core::fmt::Write;
-    // SerialPort already implements fmt::Write, so we don't need to do it here like wee did for
-    // custom VGA buffer
-    SERIAL1
-        .lock()
-        .write_fmt(args)
-        .expect("Printing to serial failed");
+    use x86_64::instructions::interrupts;
+
+    // This is required to ensure that we lock WRITER only in interrupt-free cases,
+    // thus avoiding dead-locks
+    interrupts::without_interrupts(|| {
+        // SerialPort already implements fmt::Write, so we don't need to do it here like wee did for
+        // custom VGA buffer
+        SERIAL1
+            .lock()
+            .write_fmt(args)
+            .expect("Printing to serial failed");
+    });
 }
