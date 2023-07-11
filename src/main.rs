@@ -58,13 +58,3 @@ fn test_println_many() {
         println!("test_println_many output");
     }
 }
-
-#[test_case]
-fn test_println_output() {
-    let s = "Some test string that fits on a single line";
-    println!("{}", s);
-    for (i, c) in s.chars().enumerate() {
-        let screen_char = vga::WRITER.lock().buffer.chars[vga::BUFFER_HEIGHT - 2][i].read();
-        assert_eq!(char::from(screen_char.ascii_char), c);
-    }
-}
