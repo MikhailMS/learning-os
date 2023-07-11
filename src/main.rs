@@ -7,7 +7,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use radius_os::{ println, vga };
+use radius_os::{ println, vga, hlt_loop };
 
 #[cfg(test)]
 use radius_os::test_panic_handler;
@@ -18,7 +18,7 @@ use radius_os::test_panic_handler;
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("Panic at the disco *dance*: {}", info);
-    loop {}
+    hlt_loop();
 }
 
 /// This panic only for test builds
@@ -44,7 +44,7 @@ pub extern "C" fn _start() -> ! {
     #[cfg(test)]
     test_main();
 
-    loop {}
+    hlt_loop();
 }
 
 #[test_case]

@@ -50,8 +50,9 @@ pub fn test_runner(tests: &[&dyn Testable]) {
 pub fn test_panic_handler(info: &PanicInfo) -> ! {
     serial_println!("[failed]\n");
     serial_println!("Error: {}\n", info);
+
     qemu_codes::exit_qemu(qemu_codes::QemuExitCode::Failure);
-    loop {}
+    hlt_loop();
 }
 
 pub fn init() {
@@ -68,11 +69,19 @@ pub fn init() {
     x86_64::instructions::interrupts::enable();
 }
 
+pub fn hlt_loop() -> ! {
+    loop {
+        // hlt() is a wrapper around ASM 'hlt' instruction
+        // 'hlt' instructs CPU to halt until the next external interrupt is fired
+        x86_64::instructions::hlt();
+    }
+}
+
 // Entry point for `cargo test`
 #[cfg(test)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     init();
     test_main();
-    loop {}
+    hlt_loop();
 }
