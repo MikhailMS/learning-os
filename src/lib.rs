@@ -15,6 +15,7 @@ pub mod serial_uart;
 pub mod vga;
 
 use core::panic::PanicInfo;
+use x86_64;
 
 #[cfg(test)]
 #[panic_handler]
@@ -58,6 +59,13 @@ pub fn init() {
     gdt::init();
     // Initialise Interrupt Descriptor Table
     interrupts::init_idt();
+    // Initialise Programmable Interrupt Controller
+    // Unsafe because can causes UB if PICS are misconfigured
+    unsafe {
+        interrupts::PICS.lock().initialize()
+    }
+    // enable() is a wrapper around ASM 'sti' instruction
+    x86_64::instructions::interrupts::enable();
 }
 
 // Entry point for `cargo test`
