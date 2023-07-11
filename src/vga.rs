@@ -148,10 +148,16 @@ impl fmt::Write for Writer {
 pub fn _print(args: fmt::Arguments) {
     // Only to be used by macros!
     use core::fmt::Write;
-    WRITER
-        .lock()
-        .write_fmt(args)
-        .unwrap(); // Assumably alright to unwrap, because we always return Ok(()) from write_str()
+    use x86_64::instructions::interrupts;
+
+    // This is required to ensure that we lock WRITER only in interrupt-free cases,
+    // thus avoiding dead-locks
+    interrupts::without_interrupts(|| {
+        WRITER
+            .lock()
+            .write_fmt(args)
+            .unwrap(); // Assumably alright to unwrap, because we always return Ok(()) from write_str()
+    });
 }
 
 
