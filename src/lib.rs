@@ -10,6 +10,7 @@
 pub mod interrupts;
 pub mod gdt;
 pub mod macros;
+pub mod memory;
 pub mod qemu_codes;
 pub mod serial_uart;
 pub mod vga;
