@@ -56,8 +56,9 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
         0x201008,
         // some stack page
         0x0100_0020_1a10,
-        // virtual address mapped to physical address 0
-        boot_info.physical_memory_offset,
+        // virtual address mapped to physical address 0; will panic with current page traverse
+        // implementation
+        // boot_info.physical_memory_offset,
     ];
 
     for &address in &addresses {
