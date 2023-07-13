@@ -6,6 +6,7 @@
 #![test_runner(radius_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+use bootloader::{ BootInfo, entry_point };
 use core::panic::PanicInfo;
 use radius_os::{ println, vga, hlt_loop };
 
@@ -28,9 +29,9 @@ fn panic(info: &PanicInfo) -> ! {
     test_panic_handler(info)
 }
 
-#[no_mangle] // don't mangle (change) the name of this function
-pub extern "C" fn _start() -> ! {
+entry_point!(kernel_main);
 
+fn kernel_main(boot_info: &'static BootInfo) -> ! {
     radius_os::init(); // Initialise Interrupt Descriptor Table for our kernel
 
     vga::WRITER.lock().write_string("Hello there!");
@@ -40,6 +41,15 @@ pub extern "C" fn _start() -> ! {
     println!("It works!");
 
     // x86_64::instructions::interrupts::int3(); // Invoke breakpoint exception
+
+    // Let's cause page fault
+    // let ptr = 0x2057f3 as *mut u8;
+    // unsafe { *ptr = 42; }
+
+    use x86_64::registers::control::Cr3;
+    let (level_4_page_table, _) = Cr3::read();
+
+    println!("Lavel 4 Page Table at: {:?}", level_4_page_table.start_address());
 
     #[cfg(test)]
     test_main();

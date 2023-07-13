@@ -14,6 +14,8 @@ pub mod qemu_codes;
 pub mod serial_uart;
 pub mod vga;
 
+#[cfg(test)]
+use bootloader::{ BootInfo, entry_point };
 use core::panic::PanicInfo;
 use x86_64;
 
@@ -79,8 +81,10 @@ pub fn hlt_loop() -> ! {
 
 // Entry point for `cargo test`
 #[cfg(test)]
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+entry_point!(test_kernel_main);
+
+#[cfg(test)]
+fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
     init();
     test_main();
     hlt_loop();
