@@ -12,7 +12,6 @@ fn panic(info: &PanicInfo) -> ! {
     test_panic_handler(info)
 }
 
-
 #[no_mangle] // don't mangle (change) the name of this function
 pub extern "C" fn _start() -> ! {
     test_main();
