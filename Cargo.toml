@@ -7,14 +7,15 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bootloader  = { version = "0.9.23", features = [ "map_physical_memory" ] }
-lazy_static = { version = "1.0",    features = ["spin_no_std"] }
-pc-keyboard = "0.5.0"  # For simpler work with keyboard
-pic8259     = "0.10.1" # For simpler work with PIC (Programmable Interrupt Controller)
-spin        = "0.5.2"
-uart_16550  = "0.2.0"  # For simpler work with serial UART device
-volatile    = "0.2.6"
-x86_64      = "0.14.2" # For simpler work with I/O mapped ports
+bootloader            = { version = "0.9.23", features = [ "map_physical_memory" ] }
+lazy_static           = { version = "1.0",    features = ["spin_no_std"] }
+linked_list_allocator = "0.9.0"  # Simple impl of allocator
+pc-keyboard           = "0.5.0"  # For simpler work with keyboard
+pic8259               = "0.10.1" # For simpler work with PIC (Programmable Interrupt Controller)
+spin                  = "0.5.2"
+uart_16550            = "0.2.0"  # For simpler work with serial UART device
+volatile              = "0.2.6"
+x86_64                = "0.14.2" # For simpler work with I/O mapped ports
 
 # This is required to ensure we can exit once tests are completed
 # Ignore for non-test builds
