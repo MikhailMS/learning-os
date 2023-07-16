@@ -6,9 +6,18 @@
 #![test_runner(radius_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+extern crate alloc;
+
+use alloc::boxed::Box;
 use bootloader::{ BootInfo, entry_point };
 use core::panic::PanicInfo;
-use radius_os::{ println, vga, hlt_loop, memory };
+use radius_os::{
+    memory::{ self, BootInfoFrameAllocator },
+    allocator,
+    hlt_loop,
+    println,
+    vga,
+};
 use x86_64::{ structures::paging::Page, VirtAddr };
 
 #[cfg(test)]
@@ -46,13 +55,6 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     // Let's cause page fault
     // let ptr = 0x2057f3 as *mut u8;
     // unsafe { *ptr = 42; }
-
-    // let phys_memory_offset  = VirtAddr::new(boot_info.physical_memory_offset);
-    // let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
-
-    // Initialise mapper (virt to phys)
-    // let mut mapper = unsafe { memory::init(phys_memory_offset) };
-
 
     #[cfg(test)]
     test_main();

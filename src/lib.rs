@@ -6,14 +6,19 @@
 
 // Needed to enable x86-interrupt calling convention
 #![feature(abi_x86_interrupt)]
+// Needed to enable custom allocator
+#![feature(alloc_error_handler)]
 
-pub mod interrupts;
+pub mod allocator;
 pub mod gdt;
+pub mod interrupts;
 pub mod macros;
 pub mod memory;
 pub mod qemu_codes;
 pub mod serial_uart;
 pub mod vga;
+
+extern crate alloc;
 
 #[cfg(test)]
 use bootloader::{ BootInfo, entry_point };
