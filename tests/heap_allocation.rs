@@ -72,3 +72,14 @@ fn many_boxes() {
         assert_eq!(*x, i);
     }
 }
+
+#[test_case]
+fn many_boxes_long_lived() {
+    let long = Box::new(10000);
+
+    for i in 0..allocator::HEAP_SIZE {
+        let x = Box::new(i);
+        assert_eq!(*x, i);
+    }
+    assert_eq!(*long, 10000);
+}
