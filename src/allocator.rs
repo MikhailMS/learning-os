@@ -1,6 +1,7 @@
 use alloc::alloc::{ GlobalAlloc, Layout };
 use core::ptr::null_mut;
 use linked_list_allocator::LockedHeap;
+use spin::{ Mutex, MutexGuard };
 use x86_64::{
     structures::paging::{
         mapper::MapToError,
@@ -14,7 +15,8 @@ use x86_64::{
 };
 
 #[global_allocator]
-static ALLOCATOR: LockedHeap = LockedHeap::empty();
+static ALLOCATOR: LockedAllocator<BumpAllocator> = LockedAllocator::new(BumpAllocator::new());
+// static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
 pub const HEAP_START: usize = 0x4444_4444_0000;
 pub const HEAP_SIZE: usize = 100 * 1024; // 100KiB
@@ -49,17 +51,90 @@ pub fn init_heap(
     Ok(())
 }
 
-// pub struct DummyAlloc;
+pub struct BumpAllocator {
+    heap_start:  usize,
+    heap_end:    usize,
+    next:        usize,
+    allocations: usize
 
-// unsafe impl GlobalAlloc for DummyAlloc {
-//     unsafe fn alloc(&self, _layout: Layout) -> *mut u8 {
-//         null_mut()
-//     }
+}
 
-//     unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {
-//         panic!("dealloc should never be called");
-//     }
-// }
+impl BumpAllocator {
+    /// Creates new empty Bump Allocator
+    pub const fn new() -> Self {
+        BumpAllocator {
+            heap_start:  0,
+            heap_end:    0,
+            next:        0,
+            allocations: 0
+        }
+    }
+
+    pub unsafe fn init(&mut self, heap_start: usize, heap_size: usize) {
+        self.heap_start = heap_start;
+        self.heap_end   = heap_start + heap_size;
+        self.next       = heap_start;
+    }
+}
+
+/// Wrapper for BumpAllocator to allow trait implementation on Mutex<BumpAllocator>
+pub struct LockedAllocator<A> {
+    alloc: Mutex<A>,
+}
+
+impl<A> LockedAllocator<A> {
+    pub const fn new(alloc: A) -> Self {
+        LockedAllocator {
+            alloc: Mutex::new(alloc)
+        }
+    }
+
+    pub fn lock(&self) -> MutexGuard<A> {
+        self.alloc.lock()
+    }
+}
+
+unsafe impl GlobalAlloc for LockedAllocator<BumpAllocator> {
+    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+        let mut allocator = self.lock(); // mutable reference for which we created wrapper :)
+
+        let alloc_start = align_up(allocator.next, layout.align());
+        let alloc_end   = match alloc_start.checked_add(layout.size()) {
+            Some(end) => end,
+            None      => return null_mut(),
+        };
+
+        if alloc_end > allocator.heap_end {
+            null_mut()
+        } else {
+            allocator.next = alloc_end;
+            allocator.allocations += 1;
+
+            alloc_start as *mut u8
+        }
+    }
+
+    unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {
+        let mut allocator = self.lock();
+
+        allocator.allocations -= 1;
+        if allocator.allocations == 0 {
+            allocator.next = allocator.heap_start;
+        }
+    }
+}
+
+/// Align given address `addr` upwards to be aligned with `align`
+fn align_up(addr: usize, align: usize) -> usize {
+    let remainder = addr % align;
+    if remainder == 0 {
+        addr // already aligned
+    } else {
+        addr - remainder + align
+    }
+    // More optimised version would be
+    // (addr + align - 1) & !(align - 1)
+}
 
 #[alloc_error_handler]
 fn alloc_error_handler(layout: Layout) -> ! {
