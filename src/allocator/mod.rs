@@ -1,6 +1,12 @@
-use alloc::alloc::{ GlobalAlloc, Layout };
-use core::ptr::null_mut;
-use linked_list_allocator::LockedHeap;
+pub mod bump_allocator;
+pub mod linked_allocator;
+
+// use linked_list_allocator::LockedHeap;
+use bump_allocator::BumpAllocator;
+use linked_allocator::LinkedListAllocator;
+
+use alloc::alloc::Layout;
+use spin::{ Mutex, MutexGuard };
 use x86_64::{
     structures::paging::{
         mapper::MapToError,
@@ -14,7 +20,9 @@ use x86_64::{
 };
 
 #[global_allocator]
-static ALLOCATOR: LockedHeap = LockedHeap::empty();
+static ALLOCATOR: LockedAllocator<LinkedListAllocator> = LockedAllocator::new(LinkedListAllocator::new());
+// static ALLOCATOR: LockedAllocator<BumpAllocator> = LockedAllocator::new(BumpAllocator::new());
+// static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
 pub const HEAP_START: usize = 0x4444_4444_0000;
 pub const HEAP_SIZE: usize = 100 * 1024; // 100KiB
@@ -49,19 +57,40 @@ pub fn init_heap(
     Ok(())
 }
 
-// pub struct DummyAlloc;
 
-// unsafe impl GlobalAlloc for DummyAlloc {
-//     unsafe fn alloc(&self, _layout: Layout) -> *mut u8 {
-//         null_mut()
-//     }
+/// Wrapper for BumpAllocator to allow trait implementation on
+/// Mutex<BumpAllocator/LinkedListAllocator>
+pub struct LockedAllocator<A> {
+    alloc: Mutex<A>,
+}
 
-//     unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {
-//         panic!("dealloc should never be called");
-//     }
-// }
+impl<A> LockedAllocator<A> {
+    pub const fn new(alloc: A) -> Self {
+        LockedAllocator {
+            alloc: Mutex::new(alloc)
+        }
+    }
+
+    pub fn lock(&self) -> MutexGuard<A> {
+        self.alloc.lock()
+    }
+}
+
+
+/// Align given address `addr` upwards to be aligned with `align`
+fn align_up(addr: usize, align: usize) -> usize {
+    let remainder = addr % align;
+    if remainder == 0 {
+        addr // already aligned
+    } else {
+        addr - remainder + align
+    }
+    // More optimised version would be
+    // (addr + align - 1) & !(align - 1)
+}
 
 #[alloc_error_handler]
 fn alloc_error_handler(layout: Layout) -> ! {
     panic!("memory allocation of {} bytes failed", layout.size())
 }
+
