@@ -9,6 +9,9 @@
 // Needed to enable custom allocator
 #![feature(alloc_error_handler)]
 
+// Needed to ensure we can use new() fn of LinkedListAllocator
+#![feature(const_mut_refs)]
+
 pub mod allocator;
 pub mod gdt;
 pub mod interrupts;
