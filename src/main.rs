@@ -8,17 +8,13 @@
 
 extern crate alloc;
 
-use alloc::boxed::Box;
 use bootloader::{ BootInfo, entry_point };
 use core::panic::PanicInfo;
 use radius_os::{
-    memory::{ self, BootInfoFrameAllocator },
-    allocator,
     hlt_loop,
     println,
     vga,
 };
-use x86_64::{ structures::paging::Page, VirtAddr };
 
 #[cfg(test)]
 use radius_os::test_panic_handler;
@@ -41,7 +37,7 @@ fn panic(info: &PanicInfo) -> ! {
 
 entry_point!(kernel_main);
 
-fn kernel_main(boot_info: &'static BootInfo) -> ! {
+fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     radius_os::init(); // Initialise Interrupt Descriptor Table for our kernel
 
     vga::WRITER.lock().write_string("Hello there!");

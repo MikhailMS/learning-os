@@ -48,9 +48,13 @@ fn main(boot_info: &'static BootInfo) -> ! {
 fn simple_allocation() {
     let heap_1 = Box::new(41);
     let heap_2 = Box::new(11);
+    let heap_3 = Box::new(31);
+    let heap_4 = Box::new(21);
 
     assert_eq!(*heap_1, 41);
     assert_eq!(*heap_2, 11);
+    assert_eq!(*heap_3, 31);
+    assert_eq!(*heap_4, 21);
 }
 
 #[test_case]

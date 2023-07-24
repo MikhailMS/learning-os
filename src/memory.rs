@@ -94,13 +94,3 @@ unsafe fn active_level_4_table(physical_memory_offset: VirtAddr) -> &'static mut
     let page_table_prt: *mut PageTable = virt.as_mut_ptr();
     &mut *page_table_prt // unsafe
 }
-
-
-pub struct EmptyFrameAllocator;
-
-// unsafe because implementer must ensure that allocator only ever yields unused frames
-unsafe impl FrameAllocator<Size4KiB> for EmptyFrameAllocator {
-    fn allocate_frame(&mut self) -> Option<PhysFrame> {
-        None
-    }
-}
