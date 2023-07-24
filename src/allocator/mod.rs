@@ -25,7 +25,7 @@ static ALLOCATOR: LockedAllocator<LinkedListAllocator> = LockedAllocator::new(Li
 // static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
 pub const HEAP_START: usize = 0x4444_4444_0000;
-pub const HEAP_SIZE: usize = 100 * 1024; // 100KiB
+pub const HEAP_SIZE:  usize = 100 * 1024; // 100KiB
 
 pub fn init_heap(
     mapper:          &mut impl Mapper<Size4KiB>,
