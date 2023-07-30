@@ -19,6 +19,7 @@ pub mod macros;
 pub mod memory;
 pub mod qemu_codes;
 pub mod serial_uart;
+pub mod task;
 pub mod vga;
 
 extern crate alloc;
