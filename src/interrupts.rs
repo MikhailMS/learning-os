@@ -103,7 +103,7 @@ extern "x86-interrupt" fn page_fault_handler(stack_frame: InterruptStackFrame, e
 }
 
 extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    print!(".");
+    // print!(".");
 
     // Unsafe because notify_end_of_interrupt() can potentially cancel unsent interrupt or cause system to hang
     unsafe {
