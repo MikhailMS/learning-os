@@ -8,7 +8,11 @@ edition = "2021"
 
 [dependencies]
 bootloader            = { version = "0.9.23", features = [ "map_physical_memory" ] }
+conquer-once          = { version = "0.2.0",  default-features = false } # We need to be able to initialise heap allocated objects at compile time (not possible yet); lazy_static could be used instead, but this crate would allow us to ensure that heap allocation doesn't happen in interrupt
+crossbeam-queue       = { version = "0.2.1",  default-features = false, features = [ "alloc" ] } # We need ArrayQueue to be able to create a queue for a background tasks
+futures-util          = { version = "0.3.4",  default-features = false, features = [ "alloc" ] } # We need Stream trait to ensure our Keyboard task is async-like stream
 lazy_static           = { version = "1.0",    features = ["spin_no_std"] }
+
 linked_list_allocator = "0.9.0"  # Simple impl of allocator
 pc-keyboard           = "0.5.0"  # For simpler work with keyboard
 pic8259               = "0.10.1" # For simpler work with PIC (Programmable Interrupt Controller)
