@@ -1,5 +1,5 @@
 use lazy_static::lazy_static;
-use pc_keyboard::{ layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1 };
+use pc_keyboard::{ layouts, HandleControl, Keyboard, ScancodeSet1 };
 use pic8259::ChainedPics;
 use spin::Mutex;
 use x86_64::{
@@ -8,8 +8,13 @@ use x86_64::{
     registers::control::Cr2
 };
 
-use crate::{ print, println, hlt_loop };
-use crate::gdt;
+use crate::{
+    task::keyboard::add_scancode,
+    gdt,
+    hlt_loop,
+    print,
+    println,
+};
 
 pub const PIC1_OFFSET: u8 = 32;
 pub const PIC2_OFFSET: u8 = PIC1_OFFSET + 8;
@@ -73,14 +78,6 @@ lazy_static! {
     };
 }
 
-lazy_static! {
-    static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> = Mutex::new(
-        // HandleControl allows to add support for Unicode characters [U+0001; U+001A], however it
-        // is not required at the moment
-        Keyboard::new(layouts::Us104Key, ScancodeSet1, HandleControl::Ignore)
-    );
-}
-
 pub fn init_idt() {
     IDT.load();
 }
@@ -113,18 +110,11 @@ extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFr
 }
 
 extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    let mut keyboard = KEYBOARD.lock();
     let mut ps2_port = Port::new(0x60); // 0x0060-0x0064: The "8042" PS/2 Controller or its predecessors, dealing with keyboards and mice
-
     let scancode: u8 = unsafe { ps2_port.read() };
-    if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
-        if let Some(key) = keyboard.process_keyevent(key_event) {
-            match key {
-                DecodedKey::Unicode(character) => print!("{}",   character),
-                DecodedKey::RawKey(key)        => print!("{:?}", key),
-            }
-        }
-    }
+
+    // Send scancode into background async task - keeping interrupt handler as simple as possible
+    add_scancode(scancode);
 
     // Unsafe because notify_end_of_interrupt() can potentially cancel unsent interrupt or cause system to hang
     unsafe {
