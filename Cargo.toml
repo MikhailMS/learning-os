@@ -35,3 +35,7 @@ harness = false
 [[test]]
 name    = "stack_overflow"
 harness = false
+
+[[test]]
+name    = "executor_test"
+harness = false
