@@ -65,6 +65,7 @@ pub async fn print_keypress() {
     let mut scancode_stream = ScancodeStream::new();
     let mut keyboard        = Keyboard::new(layouts::Us104Key, ScancodeSet1, HandleControl::Ignore);
 
+    // this loop is practically endless, since poll_next() of ScancodeStream never returns None
     while let Some(scancode) = scancode_stream.next().await {
         if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
             if let Some(key) = keyboard.process_keyevent(key_event) {
