@@ -15,6 +15,11 @@ use core::{
     },
 };
 use crossbeam_queue::ArrayQueue;
+use x86_64::instructions::interrupts::{
+    disable,
+    enable,
+    enable_and_hlt,
+};
 
 use crate::task::{
     Task,
@@ -57,6 +62,7 @@ impl Executor {
         // Executor is not optimal as it would run endlesly thus burning CPU at 100%
         loop {
             self.run_ready_tasks();
+            self.sleep_if_idle();
         }
     }
 
@@ -87,6 +93,15 @@ impl Executor {
                 }
                 Poll::Pending   => {}
             }
+        }
+    }
+
+    fn sleep_if_idle(&self) {
+        disable();
+        if self.task_queue.is_empty() {
+            enable_and_hlt();
+        } else {
+            enable();
         }
     }
 }
