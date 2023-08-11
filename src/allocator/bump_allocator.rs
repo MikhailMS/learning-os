@@ -22,6 +22,12 @@ impl BumpAllocator {
         }
     }
 
+    /// # Safety
+    /// Initialise the allocator with given heap boundaries
+    ///
+    /// This function is unsafe because the caller must guarantee that given
+    /// heap bounds are valid and that heap is unused.
+    /// This method to be called only once
     pub unsafe fn init(&mut self, heap_start: usize, heap_size: usize) {
         self.heap_start = heap_start;
         self.heap_end   = heap_start + heap_size;

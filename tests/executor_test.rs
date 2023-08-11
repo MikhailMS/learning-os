@@ -29,7 +29,7 @@ fn panic(info: &PanicInfo) -> ! {
     let mut output      = String::new();
 
     if let Some(msg) = info.message() {
-        fmt::write(&mut output, *msg);
+        fmt::write(&mut output, *msg).unwrap();
     }
 
     if expected_output == output {
@@ -89,7 +89,7 @@ async fn read_task() {
     // TODO: re-write to make it better :)
     for (i, _c) in assumed_output.chars().enumerate() {
         let screen_char = writer.buffer.chars[BUFFER_HEIGHT - 2][i].read();
-        fmt::write(&mut actual_output, format_args!("{}", char::from(screen_char.ascii_char)));
+        fmt::write(&mut actual_output, format_args!("{}", char::from(screen_char.ascii_char))).unwrap();
     }
 
     panic!("{}", actual_output);

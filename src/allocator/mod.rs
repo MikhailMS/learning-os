@@ -1,9 +1,10 @@
 pub mod bump_allocator;
 pub mod linked_allocator;
 
-// use linked_list_allocator::LockedHeap;
-use bump_allocator::BumpAllocator;
-use linked_allocator::LinkedListAllocator;
+#[cfg(all(feature = "bump-allocator"))]
+use bump_allocator::BumpAllocator as Allocator;
+#[cfg(all(feature = "linked-allocator"))]
+use linked_allocator::LinkedListAllocator as Allocator;
 
 use alloc::alloc::Layout;
 use spin::{ Mutex, MutexGuard };
@@ -20,9 +21,7 @@ use x86_64::{
 };
 
 #[global_allocator]
-static ALLOCATOR: LockedAllocator<LinkedListAllocator> = LockedAllocator::new(LinkedListAllocator::new());
-// static ALLOCATOR: LockedAllocator<BumpAllocator> = LockedAllocator::new(BumpAllocator::new());
-// static ALLOCATOR: LockedHeap = LockedHeap::empty();
+static ALLOCATOR: LockedAllocator<Allocator> = LockedAllocator::new(Allocator::new());
 
 pub const HEAP_START: usize = 0x4444_4444_0000;
 pub const HEAP_SIZE:  usize = 100 * 1024; // 100KiB
@@ -58,7 +57,7 @@ pub fn init_heap(
 }
 
 
-/// Wrapper for BumpAllocator to allow trait implementation on
+/// Wrapper for a custom Allocator to allow trait implementation on
 /// Mutex<BumpAllocator/LinkedListAllocator>
 pub struct LockedAllocator<A> {
     alloc: Mutex<A>,

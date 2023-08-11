@@ -1,5 +1,4 @@
 use lazy_static::lazy_static;
-use pc_keyboard::{ layouts, HandleControl, Keyboard, ScancodeSet1 };
 use pic8259::ChainedPics;
 use spin::Mutex;
 use x86_64::{
@@ -12,7 +11,6 @@ use crate::{
     task::keyboard::add_scancode,
     gdt,
     hlt_loop,
-    print,
     println,
 };
 

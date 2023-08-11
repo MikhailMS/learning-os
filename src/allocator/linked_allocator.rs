@@ -42,6 +42,7 @@ impl LinkedListAllocator {
         }
     }
 
+    /// # Safety
     /// Initialise the allocator with given heap boundaries
     ///
     /// This function is unsafe because the caller must guarantee that given

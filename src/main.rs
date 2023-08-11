@@ -18,14 +18,14 @@ use radius_os::{
         Task,
     },
     allocator,
-    hlt_loop,
     println,
     vga,
 };
-use x86_64::VirtAddr;
-
+#[cfg(not(test))]
+use radius_os::hlt_loop;
 #[cfg(test)]
 use radius_os::test_panic_handler;
+use x86_64::VirtAddr;
 
 
 /// This panic only for dev & release builds
@@ -69,7 +69,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     executor.spawn(Task::new(print_keypress()));
     executor.run();
 
-    println!("It works!");
+    // ----------- Anything below is unreachable
 
     // x86_64::instructions::interrupts::int3(); // Invoke breakpoint exception
 
@@ -77,7 +77,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     // let ptr = 0x2057f3 as *mut u8;
     // unsafe { *ptr = 42; }
 
-    hlt_loop();
+    // hlt_loop();
 }
 
 #[test_case]
