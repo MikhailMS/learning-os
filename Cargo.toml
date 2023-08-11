@@ -15,6 +15,7 @@ version     = "0.1.0"
 # Default features
 default          = ["linked-allocator"]
 linked-allocator = []
+bump-allocator   = []
 
 [dependencies]
 bootloader            = { version = "0.9.23", features = [ "map_physical_memory" ] }
