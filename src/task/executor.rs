@@ -4,13 +4,9 @@ use alloc::{
     task::Wake,
 };
 use core::{
-    future::Future,
-    pin::Pin,
     task::{
         Context,
         Poll,
-        RawWaker,
-        RawWakerVTable,
         Waker,
     },
 };
