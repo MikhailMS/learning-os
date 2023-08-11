@@ -1,10 +1,20 @@
 [package]
-authors = ["MikhailMS <1488maiklm@gmail.com>"]
-name    = "radius_os"
-version = "0.1.0"
-edition = "2021"
+authors     = ["MikhailMS <1488maiklm@gmail.com>"]
+categories  = ["os", "no-std"]
+description = "Learning project to expplore how to build an OS from scratch"
+edition     = "2021"
+homepage    = "https://github.com/MikhailMS/learning-os"
+keywords    = ["operating", "system"]
+license     = "MIT"
+name        = "radius_os"
+readme      = "README.md"
+repository  = "https://github.com/MikhailMS/learning-os"
+version     = "0.1.0"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+# Default features
+default          = ["linked-allocator"]
+linked-allocator = []
 
 [dependencies]
 bootloader            = { version = "0.9.23", features = [ "map_physical_memory" ] }
@@ -13,7 +23,6 @@ crossbeam-queue       = { version = "0.2.1",  default-features = false, features
 futures-util          = { version = "0.3.4",  default-features = false, features = [ "alloc" ] } # We need Stream trait to ensure our Keyboard task is async-like stream
 lazy_static           = { version = "1.0",    features = ["spin_no_std"] }
 
-linked_list_allocator = "0.9.0"  # Simple impl of allocator
 pc-keyboard           = "0.5.0"  # For simpler work with keyboard
 pic8259               = "0.10.1" # For simpler work with PIC (Programmable Interrupt Controller)
 spin                  = "0.5.2"
