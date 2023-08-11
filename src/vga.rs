@@ -86,19 +86,15 @@ impl Writer {
     }
 
     pub fn write_byte_at(&mut self, byte: u8, row: usize, col: usize) {
-        match byte {
-            // printable ASCII byte or newline
-            0x20..=0x7e => {
-                if (row < BUFFER_HEIGHT) && (col < BUFFER_WIDTH) {
-                    let colour_code = self.colour_code;
-                    self.buffer.chars[row][col].write(ScreenChar {
-                        ascii_char: byte,
-                        colour_code,
-                    });
-                }
-            },
-            // not part of printable ASCII range
-            _ => (),
+        // printable ASCII byte or newline
+        if let 0x20..=0x7e = byte {
+            if (row < BUFFER_HEIGHT) && (col < BUFFER_WIDTH) {
+                let colour_code = self.colour_code;
+                self.buffer.chars[row][col].write(ScreenChar {
+                    ascii_char: byte,
+                    colour_code,
+                });
+            }
         }
     }
 

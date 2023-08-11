@@ -18,14 +18,13 @@ lazy_static! {
         let mut tss = TaskStateSegment::new();
 
         tss.interrupt_stack_table[DOUBLE_FAULT_IST_IDX as usize] = {
-            const STACK_SIZE: usize = 4096 * 5;
+            const STACK_SIZE: usize            = 4096 * 5;
             static mut STACK: [u8; STACK_SIZE] = [0; STACK_SIZE];
 
             let stack_start = VirtAddr::from_ptr(unsafe { &STACK });
-            let stack_end   = stack_start + STACK_SIZE;
 
             // We return top address (end of the stack) because stacks on x86 grow downwards, i.e. from high addresses to low addresses
-            stack_end
+            stack_start + STACK_SIZE
         };
         tss
     };

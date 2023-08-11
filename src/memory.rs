@@ -6,14 +6,10 @@ use x86_64::{
     registers::control::Cr3,
     structures::paging::{
         FrameAllocator,
-        Mapper,
         OffsetPageTable,
-        Page,
         PageTable,
-        PageTableFlags,
         PhysFrame,
         Size4KiB,
-        page_table::FrameError
     },
     PhysAddr,
     VirtAddr
@@ -26,6 +22,7 @@ pub struct BootInfoFrameAllocator {
 }
 
 impl BootInfoFrameAllocator {
+    /// # Safety
     /// Create FrameAllocator from the passed memory map
     ///
     /// This function is unsafe because the caller must guarantee that passed
@@ -66,6 +63,7 @@ unsafe impl FrameAllocator<Size4KiB> for BootInfoFrameAllocator {
     }
 }
 
+/// # Safety
 /// Initialises a new OffsetPageTable
 ///
 /// This function is unsafe because the caller must guarantee that the
@@ -78,6 +76,7 @@ pub unsafe fn init(physical_memory_offset: VirtAddr) -> OffsetPageTable<'static>
   OffsetPageTable::new(level_4_table, physical_memory_offset)
 }
 
+/// # Safety
 /// Returns a mutable reference (pointer) to the active Level 4 Page Table
 ///
 /// This function is unsafe because the caller must guarantee that the
