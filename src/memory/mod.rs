@@ -93,3 +93,4 @@ unsafe fn active_level_4_table(physical_memory_offset: VirtAddr) -> &'static mut
     let page_table_prt: *mut PageTable = virt.as_mut_ptr();
     &mut *page_table_prt // unsafe
 }
+
