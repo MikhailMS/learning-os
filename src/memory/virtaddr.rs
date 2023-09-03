@@ -30,7 +30,9 @@ impl VirtAddr {
     #[inline]
     pub fn try_new(addr: u64) -> Result<Self, ()> {
         match addr.get_bits(47..64) {
-            // TODO: Figure out why we have 0x1ffff here
+            // 0       -> all bits are set to 0
+            // 0x1ffff -> all bits are set to 1
+            // 1       -> only first bit is set to 1
             0 | 0x1ffff => VirtAddr(addr),               // canonical address
             1           => VirtAddr::new_truncate(addr), // not canonical - requires sign extension
             _           => ()                            // incorrect address
